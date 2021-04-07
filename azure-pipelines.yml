@@ -20,10 +20,11 @@ stages:
       - job: BuildAndPush
         steps:
           - bash: |
-              buildDate=$(date +"%Y-%m-%d %H:%M:%S")
-              echo "##vso[task.setvariable variable=Build_DT;isOutput=true]${buildDate}"
-            displayName: 'Get Build Date and Time'
-            name: 'getBuildDateTime'
+              repo_sha=$(git rev-parse --verify HEAD)
+              docker_image_tag_sha=${repo_sha:0:7}
+              echo "##vso[task.setvariable variable=DOCKER_TAG;isOutput=true]${docker_image_tag_sha}"
+            displayName: 'Get Docker Tag'
+            name: 'getDockerTag'
           - task: Docker@1
             displayName: 'Docker Login'
             inputs:
@@ -33,7 +34,7 @@ stages:
           - task: Docker@1
             displayName: 'Build Docker Image'
             inputs:
-              repository: '$(azureContainerRegistry)/$(applicationName):$(deployTarget)-$(getBuildDateTime.Build_DT)'
+              repository: '$(azureContainerRegistry)/$(applicationName):$(deployTarget)-$(getDockerTag.DOCKER_TAG)'
               command: build
               Dockerfile: ./Dockerfile
           - task: Docker@1
@@ -42,7 +43,7 @@ stages:
               azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
               azureContainerRegistry: $(azureContainerRegistry)
               command: push
-              imageName: '$(applicationName):$(getBuildDateTime.Build_DT)'
+              imageName: '$(applicationName):$(deployTarget)-$(getDockerTag.DOCKER_TAG)'
           - task: Docker@1
             displayName: 'Docker Logout'
             inputs:
