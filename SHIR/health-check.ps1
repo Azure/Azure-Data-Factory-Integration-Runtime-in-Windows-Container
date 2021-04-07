@@ -1,4 +1,6 @@
-$DmgcmdPath = "C:\Program Files\Microsoft Integration Runtime\4.0\Shared\dmgcmd.exe"
+Import-Module $PSScriptRoot\library.ps1
+
+$DmgcmdPath = Get-CmdFilePath
 
 function Check-Node-Connection() {
     Start-Process $DmgcmdPath -Wait -ArgumentList "-cgc" -RedirectStandardOutput "C:\SHIR\status-check.txt"

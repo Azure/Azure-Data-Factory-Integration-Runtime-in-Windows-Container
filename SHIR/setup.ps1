@@ -1,4 +1,6 @@
-$DmgcmdPath = "C:\Program Files\Microsoft Integration Runtime\4.0\Shared\dmgcmd.exe"
+Import-Module $PSScriptRoot\library.ps1
+
+$DmgcmdPath = Get-CmdFilePath
 
 function Write-Log($Message) {
     function TS { Get-Date -Format 'MM/dd/yyyy hh:mm:ss' }
