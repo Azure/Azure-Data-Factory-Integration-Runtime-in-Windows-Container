@@ -9,6 +9,10 @@ variables:
   applicationName: 'mi-adf-integration-runtime'
   azureSubscriptionEndpoint: 'DTS-SHAREDSERVICES-PROD'
   azureContainerRegistry: 'sdshmctspublic.azurecr.io'
+  ${{ if eq(variables['Build.SourceBranchName'], 'main') }}: 
+    deployTarget: prod
+  ${{ if not(eq(variables['Build.SourceBranchName'], 'main')) }}: 
+    deployTarget: dev
 
 stages:
   - stage: BuildAndPush
@@ -29,7 +33,7 @@ stages:
           - task: Docker@1
             displayName: 'Build Docker Image'
             inputs:
-              repository: '$(azureContainerRegistry)/$(applicationName):$(getBuildDateTime.Build_DT)'
+              repository: '$(azureContainerRegistry)/$(applicationName):$(deployTarget)-$(getBuildDateTime.Build_DT)'
               command: build
               Dockerfile: ./Dockerfile
           - task: Docker@1
