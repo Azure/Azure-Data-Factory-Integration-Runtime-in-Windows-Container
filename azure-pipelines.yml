@@ -20,26 +20,26 @@ stages:
               echo "##vso[task.setvariable variable=Build_DT;isOutput=true]${buildDate}"
             displayName: 'Get Build Date and Time'
             name: 'getBuildDateTime'
-          - task: Docker@2
+          - task: Docker@1
             displayName: 'Docker Login'
             inputs:
               azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
               azureContainerRegistry: $(azureContainerRegistry)
               command: login
-          - task: Docker@2
+          - task: Docker@1
             displayName: 'Build Docker Image'
             inputs:
               repository: '$(azureContainerRegistry)/$(applicationName):$(getBuildDateTime.Build_DT)'
               command: build
               Dockerfile: ./Dockerfile
-          - task: Docker@2
+          - task: Docker@1
             displayName: 'Push Docker Image'
             inputs:
               azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
               azureContainerRegistry: $(azureContainerRegistry)
               command: push
               imageName: '$(applicationName):$(getBuildDateTime.Build_DT)'
-          - task: Docker@2
+          - task: Docker@1
             displayName: 'Docker Logout'
             inputs:
               command: logout
