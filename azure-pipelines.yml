@@ -34,7 +34,7 @@ stages:
           - task: Docker@1
             displayName: 'Build Docker Image'
             inputs:
-              repository: '$(azureContainerRegistry)/$(applicationName):$(deployTarget)-$(getDockerTag.DOCKER_TAG)'
+              imageName: '$(azureContainerRegistry)/$(applicationName):$(deployTarget)-$(getDockerTag.DOCKER_TAG)'
               command: build
               Dockerfile: ./Dockerfile
           - task: Docker@1

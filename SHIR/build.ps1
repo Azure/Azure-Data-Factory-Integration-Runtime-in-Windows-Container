@@ -1,10 +1,5 @@
 Import-Module $PSScriptRoot\library.ps1
 
-function Write-Log($Message) {
-    function TS { Get-Date -Format 'MM/dd/yyyy hh:mm:ss' }
-    Write-Host "[$(TS)] $Message"
-}
-
 function Install-SHIR() {
     Write-Log "Install the Self-hosted Integration Runtime in the Windows container"
 

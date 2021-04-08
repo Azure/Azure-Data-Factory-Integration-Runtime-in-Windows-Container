@@ -1,3 +1,8 @@
+function Write-Log($Message) {
+    function TS { Get-Date -Format 'MM/dd/yyyy hh:mm:ss' }
+    Write-Host "[$(TS)] $Message"
+}
+
 function Is-64BitSystem
 {
      $computerName = $env:COMPUTERNAME
@@ -72,10 +77,10 @@ function Download-GatewayInstaller
         [String]$version
     )
 
-    Write-Host "Start to download MSI"
+    Write-Log "Start to download MSI"
     $uri = Populate-Url $version
     $output = "$PSScriptRoot\IntegrationRuntime.msi"
-    Write-Host $uri
+    Write-Log "Downloading from: $uri"
     (New-Object System.Net.WebClient).DownloadFile($uri, $output)
 
     $exist = Test-Path($output)
@@ -85,7 +90,7 @@ function Download-GatewayInstaller
     }
 
     $msg = "New gateway MSI has been downloaded to " + $output
-    Write-Host $msg
+    Write-Log $msg
     return $output
 }
 
@@ -106,7 +111,7 @@ function Get-LatestGatewayVersion()
         throw "Can't get version from gateway download uri"
     }
 
-    $msg = "Latest gateway: " + $version
-    Write-Host $msg
+    $msg = "Latest gateway version is: " + $version
+    Write-Log $msg
     return $version
 }

@@ -2,11 +2,6 @@ Import-Module $PSScriptRoot\library.ps1
 
 $DmgcmdPath = Get-CmdFilePath
 
-function Write-Log($Message) {
-    function TS { Get-Date -Format 'MM/dd/yyyy hh:mm:ss' }
-    Write-Host "[$(TS)] $Message"
-}
-
 function Check-Is-Registered() {
     $result = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\DataTransfer\DataManagementGateway\ConfigurationManager' -Name HaveRun -ErrorAction SilentlyContinue
     if (($result -ne $null) -and ($result.HaveRun -eq 'Mdw')) {
@@ -38,7 +33,6 @@ function Check-Node-Connection() {
         throw "Node is offline"    
     }
 }
-
 
 function RegisterNewNode {
     Param(
