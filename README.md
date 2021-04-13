@@ -2,6 +2,8 @@ Azure Data Factory Integration Runtime in Windows Container Sample
 =======
 This repo contains the sample for running the Azure Data Factory Integration Runtime in Windows Container
 
+Support SHIR version: 5.0 or later
+
 For more information about Azure Data Factory, see [https://docs.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime](https://docs.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime)
 
 
