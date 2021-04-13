@@ -1,4 +1,4 @@
-$DmgcmdPath = "C:\Program Files\Microsoft Integration Runtime\4.0\Shared\dmgcmd.exe"
+$DmgcmdPath = "C:\Program Files\Microsoft Integration Runtime\5.0\Shared\dmgcmd.exe"
 
 function Write-Log($Message) {
     function TS { Get-Date -Format 'MM/dd/yyyy hh:mm:ss' }
@@ -9,6 +9,8 @@ function Install-SHIR() {
     Write-Log "Install the Self-hosted Integration Runtime in the Windows container"
 
     $MsiFileName = (Get-ChildItem -Path C:\SHIR | Where-Object { $_.Name -match [regex] "IntegrationRuntime_.*.msi" })[0].Name
+    Write-Log $MsiFileName
+
     Start-Process msiexec.exe -Wait -ArgumentList "/i C:\SHIR\$MsiFileName /qn"
     if (!$?) {
         Write-Log "SHIR MSI Install Failed"

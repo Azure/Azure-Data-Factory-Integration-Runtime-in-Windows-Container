@@ -1,4 +1,4 @@
-$DmgcmdPath = "C:\Program Files\Microsoft Integration Runtime\4.0\Shared\dmgcmd.exe"
+$DmgcmdPath = "C:\Program Files\Microsoft Integration Runtime\5.0\Shared\dmgcmd.exe"
 
 function Write-Log($Message) {
     function TS { Get-Date -Format 'MM/dd/yyyy hh:mm:ss' }
