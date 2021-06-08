@@ -1,7 +1,7 @@
 $DmgcmdPath = "C:\Program Files\Microsoft Integration Runtime\5.0\Shared\dmgcmd.exe"
 
 function Write-Log($Message) {
-    function TS { Get-Date -Format 'MM/dd/yyyy hh:mm:ss' }
+    function TS { Get-Date -Format 'MM/dd/yyyy HH:mm:ss' }
     Write-Host "[$(TS)] $Message"
 }
 
@@ -19,22 +19,9 @@ function Check-Main-Process() {
     if ($ProcessResult) {
         return $TRUE
     }
-    else {
-        throw "Main Process not found"   
-    }
-}
 
-function Check-Node-Connection() {
-    Start-Process $DmgcmdPath -Wait -ArgumentList "-cgc" -RedirectStandardOutput "C:\SHIR\status-check.txt"
-    $ConnectionResult = Get-Content "C:\SHIR\status-check.txt"
-    Remove-Item -Force "C:\SHIR\status-check.txt"
-
-    if ($ConnectionResult -like "Connected") {
-        return $TRUE
-    }
-    else {
-        throw "Node is offline"    
-    }
+    Write-Log "diahost.exe is not running"
+    return $FALSE
 }
 
 
@@ -46,7 +33,18 @@ function RegisterNewNode {
         $HA_PORT
     )
 
-    Write-Log "Start registering the new SHIR node"
+    Write-Log "Start registering a new SHIR node"
+
+    if ($ENABLE_HA -eq "true") {
+        Write-Log "Enable High Availability"
+        $PORT = $HA_PORT
+        if (!$HA_PORT) {
+            $PORT = "8060"
+        }
+        Write-Log "Remote Access Port: $($PORT)"
+        Start-Process $DmgcmdPath -Wait -ArgumentList "-EnableRemoteAccessInContainer", "$($PORT)" -RedirectStandardOutput "C:\SHIR\register-out.txt" -RedirectStandardError "C:\SHIR\register-error.txt"
+        Start-Sleep -Seconds 15
+    }
 
     if (!$NODE_NAME) {
         Start-Process $DmgcmdPath -Wait -ArgumentList "-RegisterNewNode", "$($AUTH_KEY)" -RedirectStandardOutput "C:\SHIR\register-out.txt" -RedirectStandardError "C:\SHIR\register-error.txt"
@@ -54,15 +52,8 @@ function RegisterNewNode {
         Start-Process $DmgcmdPath -Wait -ArgumentList "-RegisterNewNode", "$($AUTH_KEY)", "$($NODE_NAME)" -RedirectStandardOutput "C:\SHIR\register-out.txt" -RedirectStandardError "C:\SHIR\register-error.txt"
     }
 
-    if ($ENABLE_HA -eq "true") {
-        Write-Log "Enable High Availability"
-        $PORT = $HA_PORT -or "8060"
-        Start-Process $DmgcmdPath -Wait -ArgumentList "-EnableRemoteAccess", "$($PORT)"
-    }
-
     $StdOutResult = Get-Content "C:\SHIR\register-out.txt"
     $StdErrResult = Get-Content "C:\SHIR\register-error.txt"
-
 
     if ($StdOutResult)
     {
@@ -80,29 +71,57 @@ function RegisterNewNode {
 # Register SHIR with key from Env Variable: AUTH_KEY
 if (Check-Is-Registered) {
     Write-Log "Restart the existing node"
+
+    if ($ENABLE_HA -eq "true") {
+        Write-Log "Enable High Availability"
+        $PORT = $HA_PORT
+        if (!$HA_PORT) {
+            $PORT = "8060"
+        }
+        Write-Log "Remote Access Port: $($PORT)"
+        Start-Process $DmgcmdPath -Wait -ArgumentList "-EnableRemoteAccessInContainer", "$($PORT)"
+        Start-Sleep -Seconds 15
+    }
+
     Start-Process $DmgcmdPath -Wait -ArgumentList "-Start"
 } elseif (Test-Path Env:AUTH_KEY) {
-    Write-Log "Registering SHIR with the node key: $((Get-Item Env:AUTH_KEY).Value)"
-    Write-Log "Registering SHIR with the node name: $((Get-Item Env:NODE_NAME).Value)"
-    Write-Log "Registering SHIR with the enable high availability flag: $((Get-Item Env:ENABLE_HA).Value)"
-    Write-Log "Registering SHIR with the tcp port: $((Get-Item Env:HA_PORT).Value)"
+    Write-Log "Registering SHIR node with the node key: $($Env:AUTH_KEY)"
+    Write-Log "Registering SHIR node with the node name: $($Env:NODE_NAME)"
+    Write-Log "Registering SHIR node with the enable high availability flag: $($Env:ENABLE_HA)"
+    Write-Log "Registering SHIR node with the tcp port: $($Env:HA_PORT)"
+    
     Start-Process $DmgcmdPath -Wait -ArgumentList "-Start"
-    RegisterNewNode (Get-Item Env:AUTH_KEY).Value (Get-Item Env:NODE_NAME).Value (Get-Item Env:ENABLE_HA).Value (Get-Item Env:HA_PORT).Value
+
+    RegisterNewNode $Env:AUTH_KEY $Env:NODE_NAME $Env:ENABLE_HA $Env:HA_PORT
 } else {
     Write-Log "Invalid AUTH_KEY Value"
     exit 1
 }
 
-Write-Log "Waiting 30 seconds waiting for connecting"
-Start-Sleep -Seconds 30
+Write-Log "Waiting 60 seconds for connecting"
+Start-Sleep -Seconds 60
 
 try {
+    $COUNT = 0
+    $IS_REGISTERED = $FALSE
     while ($TRUE) {
-        if ((Check-Main-Process) -and (Check-Node-Connection)) {   
-            Write-Log "Node Health Check Pass"
-            Start-Sleep -Seconds 60
-            continue
+        if(!$IS_REGISTERED) {
+            if (Check-Is-Registered) {
+                $IS_REGISTERED = $TRUE
+                Write-Log "Self-hosted Integration Runtime is connected to the cloud service"
+            }
         }
+
+        if (Check-Main-Process) {
+            $COUNT = 0
+        } else {
+            $COUNT += 1
+            if ($COUNT -gt 5) {
+                throw "Diahost.exe is not running"  
+            }
+        }
+
+        Start-Sleep -Seconds 60
     }
 }
 finally {
