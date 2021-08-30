@@ -8,7 +8,7 @@ function Write-Log($Message) {
 function Install-SHIR() {
     Write-Log "Install the Self-hosted Integration Runtime in the Windows container"
 
-    $MsiFileName = (Get-ChildItem -Path C:\SHIR | Where-Object { $_.Name -match [regex] "IntegrationRuntime_.*.msi" })[0].Name
+    $MsiFileName = (Get-ChildItem -Path C:\SHIR | Where-Object { $_.Name -match [regex] "IntegrationRuntime.*.msi" })[0].Name
     Write-Log $MsiFileName
 
     Start-Process msiexec.exe -Wait -ArgumentList "/i C:\SHIR\$MsiFileName /qn"
