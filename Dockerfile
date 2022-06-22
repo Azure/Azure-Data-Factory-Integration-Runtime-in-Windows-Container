@@ -7,7 +7,7 @@ ADD https://download.microsoft.com/download/E/4/7/E4771905-1079-445B-8BF9-8A1A07
 
 RUN ["powershell", "C:/SHIR/build.ps1"]
 
-CMD ["powershell", "C:/SHIR/setup.ps1"]
+ENTRYPOINT ["powershell", "C:/SHIR/setup.ps1"]
 
 ENV SHIR_WINDOWS_CONTAINER_ENV True
 
