@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2019
 # Download the latest self-hosted integration runtime installer into the SHIR folder
 COPY SHIR C:/SHIR/
 
-RUN ["curl" "-L" "https://go.microsoft.com/fwlink/?linkid=839822&clcid=0x409" "--output" "C:/SHIR/SHIR.msi"]
+RUN ["curl", "-L", "https://go.microsoft.com/fwlink/?linkid=839822&clcid=0x409", "-o", "C:/SHIR/SHIR.msi"]
 
 RUN ["powershell", "C:/SHIR/build.ps1"]
 
