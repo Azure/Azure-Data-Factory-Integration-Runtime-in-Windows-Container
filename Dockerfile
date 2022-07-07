@@ -5,7 +5,7 @@ COPY SHIR C:/SHIR/
 
 RUN ["powershell", "C:/SHIR/build.ps1"]
 
-CMD ["powershell", "C:/SHIR/setup.ps1"]
+ENTRYPOINT ["powershell", "C:/SHIR/setup.ps1"]
 
 ENV SHIR_WINDOWS_CONTAINER_ENV True
 
