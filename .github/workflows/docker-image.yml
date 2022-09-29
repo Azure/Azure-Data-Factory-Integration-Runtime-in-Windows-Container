@@ -1,0 +1,29 @@
+name: Docker image
+
+on:
+  push:
+    branches: 
+      - main
+
+env:
+  DOCKER_IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker build
+        run: docker build --tag ${env:DOCKER_IMAGE} .
+
+      - name: Docker push
+        run: docker push  ${env:DOCKER_IMAGE}
+
