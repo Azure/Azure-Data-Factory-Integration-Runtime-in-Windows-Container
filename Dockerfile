@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
+FROM mcr.microsoft.com/windows/ltsc2022:ltsc2022
 
 # Download the latest self-hosted integration runtime installer into the SHIR folder
 COPY SHIR C:/SHIR/
