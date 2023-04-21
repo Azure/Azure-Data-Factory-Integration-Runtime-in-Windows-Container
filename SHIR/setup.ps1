@@ -30,10 +30,18 @@ function RegisterNewNode {
         $AUTH_KEY,
         $NODE_NAME,
         $ENABLE_HA,
-        $HA_PORT
+        $HA_PORT,
+        $ENABLE_AD,
+        $AD_TIME
     )
 
     Write-Log "Start registering a new SHIR node"
+    Write-Log "Registering SHIR node with the node key: $($AUTH_KEY)"
+
+    if (!$NODE_NAME) {
+        $NODE_NAME = $Env:COMPUTERNAME
+    }
+    Write-Log "Registering SHIR node with the node name: $($NODE_NAME)"
 
     if ($ENABLE_HA -eq "true") {
         Write-Log "Enable High Availability"
@@ -46,8 +54,15 @@ function RegisterNewNode {
         Start-Sleep -Seconds 15
     }
 
-    if (!$NODE_NAME) {
-        Start-Process $DmgcmdPath -Wait -ArgumentList "-RegisterNewNode", "$($AUTH_KEY)" -RedirectStandardOutput "C:\SHIR\register-out.txt" -RedirectStandardError "C:\SHIR\register-error.txt"
+    if ($ENABLE_AD -eq "true") {
+        Write-Log "Enable Expired Nodes Auto-Deletion"
+        if (!$AD_TIME) {
+            $AD_TIME = 600
+        }
+
+        Write-Log "Node Expiration Time In Seconds: $($AD_TIME)"
+        Start-Process $DmgcmdPath -Wait -ArgumentList "-RegisterNewNode", "$($AUTH_KEY)", "$($NODE_NAME)", "$($AD_TIME)" -RedirectStandardOutput "C:\SHIR\register-out.txt" -RedirectStandardError "C:\SHIR\register-error.txt"
+        Start-Sleep -Seconds 15
     } else {
         Start-Process $DmgcmdPath -Wait -ArgumentList "-RegisterNewNode", "$($AUTH_KEY)", "$($NODE_NAME)" -RedirectStandardOutput "C:\SHIR\register-out.txt" -RedirectStandardError "C:\SHIR\register-error.txt"
     }
@@ -85,14 +100,9 @@ if (Check-Is-Registered) {
 
     Start-Process $DmgcmdPath -Wait -ArgumentList "-Start"
 } elseif (Test-Path Env:AUTH_KEY) {
-    Write-Log "Registering SHIR node with the node key: $($Env:AUTH_KEY)"
-    Write-Log "Registering SHIR node with the node name: $($Env:NODE_NAME)"
-    Write-Log "Registering SHIR node with the enable high availability flag: $($Env:ENABLE_HA)"
-    Write-Log "Registering SHIR node with the tcp port: $($Env:HA_PORT)"
-    
     Start-Process $DmgcmdPath -Wait -ArgumentList "-Start"
 
-    RegisterNewNode $Env:AUTH_KEY $Env:NODE_NAME $Env:ENABLE_HA $Env:HA_PORT
+    RegisterNewNode $Env:AUTH_KEY $Env:NODE_NAME $Env:ENABLE_HA $Env:HA_PORT $Env:ENABLE_AD $Env:AD_TIME
 } else {
     Write-Log "Invalid AUTH_KEY Value"
     exit 1
