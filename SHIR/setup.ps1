@@ -31,8 +31,8 @@ function RegisterNewNode {
         $NODE_NAME,
         $ENABLE_HA,
         $HA_PORT,
-        $ENABLE_AD,
-        $AD_TIME
+        $ENABLE_AE,
+        $AE_TIME
     )
 
     Write-Log "Start registering a new SHIR node"
@@ -54,14 +54,14 @@ function RegisterNewNode {
         Start-Sleep -Seconds 15
     }
 
-    if ($ENABLE_AD -eq "true") {
-        Write-Log "Enable Expired Nodes Auto-Deletion"
-        if (!$AD_TIME) {
-            $AD_TIME = 600
+    if ($ENABLE_AE -eq "true") {
+        Write-Log "Enable Offline Nodes Auto-Expiration"
+        if (!$AE_TIME) {
+            $AE_TIME = 600
         }
 
-        Write-Log "Node Expiration Time In Seconds: $($AD_TIME)"
-        Start-Process $DmgcmdPath -Wait -ArgumentList "-RegisterNewNode", "$($AUTH_KEY)", "$($NODE_NAME)", "$($AD_TIME)" -RedirectStandardOutput "C:\SHIR\register-out.txt" -RedirectStandardError "C:\SHIR\register-error.txt"
+        Write-Log "Node Expiration Time In Seconds: $($AE_TIME)"
+        Start-Process $DmgcmdPath -Wait -ArgumentList "-RegisterNewNode", "$($AUTH_KEY)", "$($NODE_NAME)", "$($AE_TIME)" -RedirectStandardOutput "C:\SHIR\register-out.txt" -RedirectStandardError "C:\SHIR\register-error.txt"
         Start-Sleep -Seconds 15
     } else {
         Start-Process $DmgcmdPath -Wait -ArgumentList "-RegisterNewNode", "$($AUTH_KEY)", "$($NODE_NAME)" -RedirectStandardOutput "C:\SHIR\register-out.txt" -RedirectStandardError "C:\SHIR\register-error.txt"
@@ -102,7 +102,7 @@ if (Check-Is-Registered) {
 } elseif (Test-Path Env:AUTH_KEY) {
     Start-Process $DmgcmdPath -Wait -ArgumentList "-Start"
 
-    RegisterNewNode $Env:AUTH_KEY $Env:NODE_NAME $Env:ENABLE_HA $Env:HA_PORT $Env:ENABLE_AD $Env:AD_TIME
+    RegisterNewNode $Env:AUTH_KEY $Env:NODE_NAME $Env:ENABLE_HA $Env:HA_PORT $Env:ENABLE_AE $Env:AE_TIME
 } else {
     Write-Log "Invalid AUTH_KEY Value"
     exit 1
