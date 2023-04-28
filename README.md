@@ -23,14 +23,14 @@ For more information about Azure Data Factory, see [https://docs.microsoft.com/e
     <image-name>
 ```
 ### __Arguments list__
-|Name|Description|Default
-|---|---|---|
-| `AUTH_KEY` | Required, the authentication key for the self-hosted integration runtime. | None
-| `NODE_NAME` | Optional, the specified name of the node. | hostname |
-| `ENABLE_HA` | Optional, the flag to enable high availability and scalability.<br/> It supports up to 4 nodes registered to the same IR when `HA` is enabled, otherwise only 1 is allowed. | false |
-| `HA_PORT` | Optional, the port to set up a high availability cluster. | 8060 |
-| `ENABLE_AE` | Optional, the flag to enable offline nodes auto-expiration.<br/> If enabled, the expired nodes will be removed automatically from the IR when a new node is attempting to register.<br/> Only works when `ENABLE_HA=true`. | false |
-| `AE_TIME` | Optional, the expiration timeout duration for offline nodes in seconds. <br/>Should be no less than 600 (10 minutes). | 600 | 
+|Name|Necessity|Default|Description|
+|---|---|---|---|
+| `AUTH_KEY` | Required | | The authentication key for the self-hosted integration runtime. |
+| `NODE_NAME` | Optional | `hostname` | The specified name of the node. |
+| `ENABLE_HA` | Optional | `false` | The flag to enable high availability and scalability.<br/> It supports up to 4 nodes registered to the same IR when `HA` is enabled, otherwise only 1 is allowed. |
+| `HA_PORT` | Optional | `8060` | The port to set up a high availability cluster. |
+| `ENABLE_AE` | Optional | `false` | The flag to enable offline nodes auto-expiration.<br/> If enabled, the expired nodes will be removed automatically from the IR when a new node is attempting to register.<br/> Only works when `ENABLE_HA=true`. |
+| `AE_TIME` | Optional | `600` |  The expiration timeout duration for offline nodes in seconds. <br/>Should be no less than 600 (10 minutes). |
 
 # Contributing
 
