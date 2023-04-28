@@ -6,6 +6,31 @@ Support SHIR version: 5.0 or later
 
 For more information about Azure Data Factory, see [https://docs.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime](https://docs.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime)
 
+# QuickStart
+1. Prepare [Windows for containers](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/set-up-environment?tabs=dockerce)
+2. Build the Windows container image in the project folder
+```bash 
+> docker build . -t <image-name>
+```
+3. Run the container with specific arguments by passing environment variables
+```bash
+> docker run -d -e AUTH_KEY=<ir-authentication-key> \
+    [-e NODE_NAME=<ir-node-name>] \
+    [-e ENABLE_HA={true|false}] \
+    [-e HA_PORT=<port>] \
+    [-e ENABLE_AE={true|false}] \
+    [-e AE_TIME=<expiration-time-in-seconds>] \
+    <image-name>
+```
+### __Arguments list__
+|Name|Necessity|Default|Description|
+|---|---|---|---|
+| `AUTH_KEY` | Required | | The authentication key for the self-hosted integration runtime. |
+| `NODE_NAME` | Optional | `hostname` | The specified name of the node. |
+| `ENABLE_HA` | Optional | `false` | The flag to enable high availability and scalability.<br/> It supports up to 4 nodes registered to the same IR when `HA` is enabled, otherwise only 1 is allowed. |
+| `HA_PORT` | Optional | `8060` | The port to set up a high availability cluster. |
+| `ENABLE_AE` | Optional | `false` | The flag to enable offline nodes auto-expiration.<br/> If enabled, the expired nodes will be removed automatically from the IR when a new node is attempting to register.<br/> Only works when `ENABLE_HA=true`. |
+| `AE_TIME` | Optional | `600` |  The expiration timeout duration for offline nodes in seconds. <br/>Should be no less than 600 (10 minutes). |
 
 # Contributing
 
