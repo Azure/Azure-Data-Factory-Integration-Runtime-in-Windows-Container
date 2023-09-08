@@ -9,9 +9,13 @@ For more information about Azure Data Factory, see [https://docs.microsoft.com/e
 # QuickStart
 1. Prepare [Windows for containers](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/set-up-environment?tabs=dockerce)
 2. Build the Windows container image in the project folder
-```bash 
-> docker build . -t <image-name>
+```bash
+> docker build . -t <image-name> [--build-arg="INSTALL_JDK=true"]
 ```
+### __Arguments list__
+|Name|Necessity|Default|Description|
+|---|---|---|---|
+| `INSTALL_JDK` | Optional | `false` | The flag to install Microsoft's JDK 11 LTS. |
 3. Run the container with specific arguments by passing environment variables
 ```bash
 > docker run -d -e AUTH_KEY=<ir-authentication-key> \
