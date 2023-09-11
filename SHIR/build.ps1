@@ -30,6 +30,32 @@ function Install-SHIR() {
     }
 
     Write-Log "SHIR MSI Install Successfully"
+    Write-Log "Will remove C:\SHIR\$MsiFileName"
+    Remove-Item "C:\SHIR\$MsiFileName"
+    Write-Log "Removed C:\SHIR\$MsiFileName"
+}
+
+function Install-MSFT-JDK() {
+    Write-Log "Install the Microsoft OpenJDK in the Windows container"
+
+    Write-Log "Downloading Microsoft OpenJDK 11 LTS msi"
+    $JDKMsiFileName = 'microsoft-jdk-11-windows-x64.msi'
+
+    # Temporarily disable progress updates to speed up the download process. (See https://stackoverflow.com/questions/69942663/invoke-webrequest-progress-becomes-irresponsive-paused-while-downloading-the-fil)
+    $ProgressPreference = 'SilentlyContinue'
+    Invoke-WebRequest -Uri "https://aka.ms/download-jdk/$JDKMsiFileName" -OutFile "C:\SHIR\$JDKMsiFileName"
+    $ProgressPreference = 'Continue'
+
+    Write-Log "Installing Microsoft OpenJDK"
+    # Arguments pulled from https://learn.microsoft.com/en-us/java/openjdk/install#install-via-msi
+    Start-Process msiexec.exe -Wait -ArgumentList "/i C:\SHIR\$JDKMsiFileName ADDLOCAL=FeatureMain,FeatureEnvironment,FeatureJarFileRunWith,FeatureJavaHome INSTALLDIR=`"c:\Program Files\Microsoft\`" /quiet"
+    if (!$?) {
+        Write-Log "Microsoft OpenJDK MSI Install Failed"
+    }
+    Write-Log "Microsoft OpenJDK MSI Install Successfully"
+    Write-Log "Will remove C:\SHIR\$JDKMsiFileName"
+    Remove-Item "C:\SHIR\$JDKMsiFileName"
+    Write-Log "Removed C:\SHIR\$JDKMsiFileName"
 }
 
 function SetupEnv() {
@@ -39,5 +65,8 @@ function SetupEnv() {
 }
 
 Install-SHIR
+if ([bool]::Parse($env:INSTALL_JDK)) {
+    Install-MSFT-JDK
+}
 
 exit 0
