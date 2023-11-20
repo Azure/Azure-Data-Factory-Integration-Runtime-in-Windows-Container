@@ -90,7 +90,7 @@ if (Check-Is-Registered) {
     if ((Test-Path Env:ENABLE_HA) -and ($Env:ENABLE_HA -eq "true")) {
         Write-Log "Enable High Availability"
         $PORT = $Env:$HA_PORT
-        if (!$HA_PORT) {
+        if (!$Env:HA_PORT) {
             $PORT = "8060"
         }
         Write-Log "Remote Access Port: $($PORT)"
