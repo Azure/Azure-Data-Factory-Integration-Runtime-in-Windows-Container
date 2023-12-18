@@ -87,10 +87,10 @@ function RegisterNewNode {
 if (Check-Is-Registered) {
     Write-Log "Restart the existing node"
 
-    if ($ENABLE_HA -eq "true") {
+    if ((Test-Path Env:ENABLE_HA) -and ($Env:ENABLE_HA -eq "true")) {
         Write-Log "Enable High Availability"
-        $PORT = $HA_PORT
-        if (!$HA_PORT) {
+        $PORT = $Env:HA_PORT
+        if (!$Env:HA_PORT) {
             $PORT = "8060"
         }
         Write-Log "Remote Access Port: $($PORT)"
