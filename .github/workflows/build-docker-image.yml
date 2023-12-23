@@ -1,0 +1,59 @@
+name: Docker image
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-tag:
+    runs-on: windows-2022
+    outputs:
+      image_tag: ${{ steps.gen-image-tag.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate image tag
+        shell: bash
+        id: gen-image-tag
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            ref=PR-${{ github.event.number }}
+            # NOTE: we tag images with the head commit so they can be easily tagged/deployed,
+            # but on pull requests the image is actually built with the merge commit
+            head_commit=${{ github.event.pull_request.head.sha }}
+          else
+            ref=${{ github.ref_name }}
+            head_commit=${{ github.sha }}
+          fi
+          # for PRs: PR-11850.37.e7426df
+          # for push (develop/main/master): master.37.e7426df
+          echo "image_tag=${ref}.${{ github.run_number }}.$(echo ${head_commit} | cut -c1-7)" >> $GITHUB_OUTPUT
+  build-without-jdk:
+    needs: generate-tag
+    permissions: write-all
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v3
+      - uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+          image: adf-shir
+          tags: ${{ needs.generate-tag.outputs.image_tag }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  build-with-jdk:
+    needs: generate-tag
+    permissions: write-all
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v3
+      - uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+          image: adf-shir
+          tags: ${{ needs.generate-tag.outputs.image_tag }}-jdk11
+          buildArgs: "INSTALL_JDK=true"
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
