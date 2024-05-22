@@ -1,9 +1,10 @@
 $DmgcmdPath = "C:\Program Files\Microsoft Integration Runtime\5.0\Shared\dmgcmd.exe"
 
 function Check-Node-Connection() {
-    Start-Process $DmgcmdPath -Wait -ArgumentList "-cgc" -RedirectStandardOutput "C:\SHIR\status-check.txt"
-    $ConnectionResult = Get-Content "C:\SHIR\status-check.txt"
-    Remove-Item -Force "C:\SHIR\status-check.txt"
+    $outputFile = "C:\SHIR\status-check-$([guid]::NewGuid().ToString()).txt"
+    Start-Process $DmgcmdPath -Wait -ArgumentList "-cgc" -RedirectStandardOutput $outputFile
+    $ConnectionResult = Get-Content $outputFile
+    Remove-Item -Force $outputFile
 
     if ($ConnectionResult -like "Connected") {
         return $TRUE
