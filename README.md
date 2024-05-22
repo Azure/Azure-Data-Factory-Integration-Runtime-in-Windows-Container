@@ -24,6 +24,7 @@ For more information about Azure Data Factory, see [https://docs.microsoft.com/e
     [-e HA_PORT=<port>] \
     [-e ENABLE_AE={true|false}] \
     [-e AE_TIME=<expiration-time-in-seconds>] \
+    [-e TZ=<time-zone-name>] \
     <image-name>
 ```
 ### __Arguments list__
@@ -35,6 +36,7 @@ For more information about Azure Data Factory, see [https://docs.microsoft.com/e
 | `HA_PORT` | Optional | `8060` | The port to set up a high availability cluster. |
 | `ENABLE_AE` | Optional | `false` | The flag to enable offline nodes auto-expiration.<br/> If enabled, the node will be marked as expired when it has been offline for timeout duration defined by `AE_TIME`. |
 | `AE_TIME` | Optional | `600` |  The expiration timeout duration for offline nodes in seconds. <br/>Should be no less than 600 (10 minutes). |
+| `TZ` | Optional | `UTC` | Valid values can be found as Id from the command `Get-TimeZone -List` |
 
 # Contributing
 
