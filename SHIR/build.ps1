@@ -64,7 +64,30 @@ function SetupEnv() {
     Write-Log "SHIR Environment Setup Successfully"
 }
 
+function Add-Monitor-User($theUser) {
+    try {
+        Add-LocalGroupMember -Group "Performance Monitor Users" -Member $theUser
+    } catch {
+        Write-Log "The user $theUser was already in the Performance Monitor Users group"
+    }
+    try {
+        Add-LocalGroupMember -Group "Performance Log Users" -Member $theUser
+    } catch {
+        Write-Log "The user $theUser was already in the Performance Log Users group"
+    }
+    Write-Log "The user $theUser is now in groups Performance Monitor Users and Performance Log Users"
+  }  
+
 Install-SHIR
+
+# #######################################################
+# Add user to the monitoring groups
+# the current user was fetched from a running pod using the below code
+# $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+Add-Monitor-User "User Manager\ContainerAdministrator"  # This is the user that a user will enter as when logging into the container
+Add-Monitor-User "NT SERVICE\DIAHostService"            # This is the user that runs the SHIR backend
+
+
 if ([bool]::Parse($env:INSTALL_JDK)) {
     Install-MSFT-JDK
 }

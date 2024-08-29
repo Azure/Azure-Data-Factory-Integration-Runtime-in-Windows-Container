@@ -24,6 +24,7 @@ For more information about Azure Data Factory, see [https://docs.microsoft.com/e
     [-e HA_PORT=<port>] \
     [-e ENABLE_AE={true|false}] \
     [-e AE_TIME=<expiration-time-in-seconds>] \
+    [-e TZ=<time-zone-name>] \
     <image-name>
 ```
 ### __Arguments list__
@@ -31,10 +32,11 @@ For more information about Azure Data Factory, see [https://docs.microsoft.com/e
 |---|---|---|---|
 | `AUTH_KEY` | Required | | The authentication key for the self-hosted integration runtime. |
 | `NODE_NAME` | Optional | `hostname` | The specified name of the node. |
-| `ENABLE_HA` | Optional | `false` | The flag to enable high availability and scalability.<br/> It supports up to 4 nodes registered to the same IR when `HA` is enabled, otherwise only 1 is allowed. |
+| `ENABLE_HA` | Optional | `false` | The flag to enable high availability and scalability.<br/> It supports up to 4 nodes registered to the same IR when `HA` is enabled, otherwise only 1 is allowed. If set to true and in a kubernetes cluster - consider setting [spec.template.spec.dnsConfig.searches](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#hostname-and-name-resolution) to `service`.`namespace`.`svc.cluster.local` to allow intra-pod communications |
 | `HA_PORT` | Optional | `8060` | The port to set up a high availability cluster. |
 | `ENABLE_AE` | Optional | `false` | The flag to enable offline nodes auto-expiration.<br/> If enabled, the node will be marked as expired when it has been offline for timeout duration defined by `AE_TIME`. |
 | `AE_TIME` | Optional | `600` |  The expiration timeout duration for offline nodes in seconds. <br/>Should be no less than 600 (10 minutes). |
+| `TZ` | Optional | `UTC` | Valid values can be found as Id from the command `Get-TimeZone -List` |
 
 # Contributing
 

@@ -83,6 +83,16 @@ function RegisterNewNode {
     }
 }
 
+
+# Set timezone if set from input
+If (Test-Path Env.TZ) {
+    try { 
+        Set-TimeZone -Id $Env:TZ 
+    } catch {
+        Write-Log "Unable to set the $Env:TZ timezone"
+    }
+}
+
 # Register SHIR with key from Env Variable: AUTH_KEY
 if (Check-Is-Registered) {
     Write-Log "Restart the existing node"
