@@ -38,7 +38,7 @@ function Install-SHIR() {
 function Install-MSFT-JDK() {
     Write-Log "Install the Microsoft OpenJDK in the Windows container"
     Write-Log "Downloading Microsoft OpenJDK 21 LTS msi"
-    $JDKMsiFileName = 'microsoft-jdk-21.0.4-windows-x64.msi'
+    $JDKMsiFileName = 'microsoft-jdk-21-windows-x64.msi'
 
     # Temporarily disable progress updates to speed up the download process. (See https://stackoverflow.com/questions/69942663/invoke-webrequest-progress-becomes-irresponsive-paused-while-downloading-the-fil)
     $ProgressPreference = 'SilentlyContinue'
