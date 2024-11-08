@@ -75,7 +75,25 @@ function Add-Monitor-User($theUser) {
         Write-Log "The user $theUser was already in the Performance Log Users group"
     }
     Write-Log "The user $theUser is now in groups Performance Monitor Users and Performance Log Users"
-  }  
+}
+
+Function Install-Certificate {
+    $rootcert = (Get-ChildItem -Path C:\SHIR | Where-Object { $_.Name -match [regex] "root.*.cer" })
+    $intermittent = (Get-ChildItem -Path C:\SHIR | Where-Object { $_.Name -match [regex] "intermittent.*.cer" })
+    if($rootcert) {
+        Write-Log "Installing Root Certificate"
+        Import-Certificate -FilePath "C:\SHIR\$rootcert" -CertStoreLocation Cert:\LocalMachine\Root
+        Write-Log "Will remove C:\SHIR\$rootcert"
+        Remove-Item "C:\SHIR\$rootcert"
+
+    }
+    if($intermittent) {
+        Write-Log "Installing Intermittent Certificate"
+        Import-Certificate -FilePath "C:\SHIR\$intermittent" -CertStoreLocation Cert:\LocalMachine\CA
+        Write-Log "Will remove C:\SHIR\$intermittent"
+        Remove-Item "C:\SHIR\$intermittent"
+    }
+}
 
 Install-SHIR
 
@@ -89,6 +107,10 @@ Add-Monitor-User "NT SERVICE\DIAHostService"            # This is the user that 
 
 if ([bool]::Parse($env:INSTALL_JDK)) {
     Install-MSFT-JDK
+}
+
+if ([bool]::Parse($env:INSTALL_CERT)) {
+    Install-Certificate
 }
 
 exit 0
