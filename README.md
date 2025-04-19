@@ -10,12 +10,13 @@ For more information about Azure Data Factory, see [https://docs.microsoft.com/e
 1. Prepare [Windows for containers](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/set-up-environment?tabs=dockerce)
 2. Build the Windows container image in the project folder
 ```bash
-> docker build . -t <image-name> [--build-arg="INSTALL_JDK=true"]
+> docker build . -t <image-name> [--build-arg="INSTALL_JDK=true"] [--build-arg="INSTALL_CERT=true"]
 ```
 ### __Arguments list__
 |Name|Necessity|Default|Description|
 |---|---|---|---|
-| `INSTALL_JDK` | Optional | `false` | The flag to install Microsoft's JDK 11 LTS. |
+| `INSTALL_JDK` | Optional | `false` | The flag to install Microsoft's JDK 21 LTS. |
+| `INSTALL_CERT` | Optional | `false` | The flag to install Root or Intermittent certificate files and must match regex format [root.*.cer] or [intermittent.*.cer] to work. |
 3. Run the container with specific arguments by passing environment variables
 ```bash
 > docker run -d -e AUTH_KEY=<ir-authentication-key> \
